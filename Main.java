@@ -18,12 +18,21 @@ class NumberCounter {
 
         ExecutorService executor = Executors.newFixedThreadPool(numThreads);
 
+
+        final int e = 5;
+
         Instant startTime = Instant.now();
 
-        for (int i = 0; i < totalNumbers; i += groupSize) {
-            int start = i;
-            int end = Math.min(i + groupSize, totalNumbers);
-            Runnable task = new NumberCountTask(start, end);
+//        for (int i = 0; i < totalNumbers; i += groupSize) {
+//            int start = i;
+//            int end = Math.min(i + groupSize, totalNumbers);
+//            Runnable task = new NumberCountTask(start, end);
+//            executor.execute(task);
+//        }
+        Runnable task = new NumberCountTask(0, groupSize*e);
+        for (int i = 0; i < 10; i ++) {
+            //int end = Math.min(i + groupSize, totalNumbers);
+            task.run();
             executor.execute(task);
         }
 
@@ -57,7 +66,7 @@ class NumberCountTask implements Runnable {
     private long countNumbers(int start, int end) {
         long count = 0;
         for (int i = start; i < end; i++) {
-            count += 1;
+            count ++;
         }
         return count;
     }
