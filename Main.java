@@ -1,79 +1,53 @@
+import java.time.Duration;
+import java.time.Instant;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.time.Instant;
-import java.time.Duration;
+import java.util.concurrent.atomic.AtomicLong;
 
-public class Main {
+public class ThreadCountingExample {
     public static void main(String[] args) {
-        NumberCounter numberCounter = new NumberCounter();
-        numberCounter.countNumbers();
-    }
-}
-
-class NumberCounter {
-    public void countNumbers() {
-        int totalNumbers = 100_000_000;
-        int groupSize = 1_000_000;
         int numThreads = 100;
+        int countPerThread = 1_000_000;
+        AtomicLong total = new AtomicLong(0);
 
-        ExecutorService executor = Executors.newFixedThreadPool(numThreads);
+        ExecutorService executorService = Executors.newFixedThreadPool(numThreads);
+        Instant start = Instant.now();
 
-
-        final int e = 5;
-
-        Instant startTime = Instant.now();
-
-//        for (int i = 0; i < totalNumbers; i += groupSize) {
-//            int start = i;
-//            int end = Math.min(i + groupSize, totalNumbers);
-//            Runnable task = new NumberCountTask(start, end);
-//            executor.execute(task);
-//        }
-        Runnable task = new NumberCountTask(0, groupSize*e);
-        for (int i = 0; i < 10; i ++) {
-            //int end = Math.min(i + groupSize, totalNumbers);
-            task.run();
-            executor.execute(task);
+        for (int i = 0; i < numThreads; i++) {
+            executorService.execute(new CounterTask(countPerThread, total));
         }
 
-        executor.shutdown();
-        while (!executor.isTerminated()) {
+        executorService.shutdown();
+
+        // Wait for all threads to finish
+        while (!executorService.isTerminated()) {
+            Thread.yield();
         }
 
-     
-        System.out.println("Total Count: " + NumberCountTask.getTotalCount());
-    }
-}
+        Instant end = Instant.now();
+        long totalCount = total.get();
+        Duration duration = Duration.between(start, end);
 
-class NumberCountTask implements Runnable {
-    private int start;
-    private int end;
-    private static long totalCount = 0;
-
-    public NumberCountTask(int start, int end) {
-        this.start = start;
-        this.end = end;
+        System.out.println("Total Count: " + totalCount);
+        System.out.println("Time taken: " + duration.toMillis() + " milliseconds");
     }
 
-    @Override
-    public void run() {
-        long count = countNumbers(start, end);
-        addCount(count);
-    }
+    static class CounterTask implements Runnable {
+        private int countPerThread;
+        private AtomicLong total;
 
-    private long countNumbers(int start, int end) {
-        long count = 0;
-        for (int i = start; i < end; i++) {
-            count ++;
+        CounterTask(int countPerThread, AtomicLong total) {
+            this.countPerThread = countPerThread;
+            this.total = total;
         }
-        return count;
-    }
 
-    private synchronized void addCount(long count) {
-        totalCount += count;
-    }
-
-    public static synchronized long getTotalCount() {
-        return totalCount;
+        @Override
+        public void run() {
+            long threadTotal = 0;
+            for (int i = 0; i < countPerThread; i++) {
+                threadTotal++;
+            }
+            total.addAndGet(threadTotal);
+        }
     }
 }
