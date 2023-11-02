@@ -24,12 +24,9 @@ public class ThreadCountingExample {
             Thread.yield();
         }
 
-        Instant end = Instant.now();
         long totalCount = total.get();
-        Duration duration = Duration.between(start, end);
 
         System.out.println("Total Count: " + totalCount);
-        System.out.println("Time taken: " + duration.toMillis() + " milliseconds");
     }
 
     static class CounterTask implements Runnable {
