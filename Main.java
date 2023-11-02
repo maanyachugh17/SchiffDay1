@@ -40,10 +40,8 @@ class NumberCounter {
         while (!executor.isTerminated()) {
         }
 
-        Instant endTime = Instant.now();
-        Duration duration = Duration.between(startTime, endTime);
+     
         System.out.println("Total Count: " + NumberCountTask.getTotalCount());
-        System.out.println("Time taken: " + duration.toMillis() + " ms");
     }
 }
 
