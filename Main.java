@@ -52,5 +52,6 @@ public class ThreadCountingExample {
             total.addAndGet(threadTotal);
         }
         ///update #7
+        //branch #2 branch off
     }
 }
