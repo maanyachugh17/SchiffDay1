@@ -53,5 +53,6 @@ public class ThreadCountingExample {
         }
         ///update #7
         //main moves forward
+        //branch #2 branch off
     }
 }
