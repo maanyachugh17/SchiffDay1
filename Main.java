@@ -52,5 +52,6 @@ public class ThreadCountingExample {
             total.addAndGet(threadTotal);
         }
         ///update #7
+        //main moves forward
     }
 }
